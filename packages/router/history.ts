@@ -646,8 +646,11 @@ function getUrlBasedHistory(
 
     // try...catch because iOS limits us to 100 pushState calls :/
     try {
-      //globalHistory.pushState(historyState, "", url);
-      window.location.assign(url);
+      if (!window?.location?.replace) {
+        globalHistory.pushState(historyState, "", url);
+      } else {
+        window.location.assign(url);
+      }
     } catch (error) {
       // If the exception is because `state` can't be serialized, let that throw
       // outwards just like a replace call would so the dev knows the cause
@@ -674,8 +677,12 @@ function getUrlBasedHistory(
     index = getIndex();
     let historyState = getHistoryState(location, index);
     let url = history.createHref(location);
-    //globalHistory.replaceState(historyState, "", url);
-    window.location.replace(url);
+
+    if (!window?.location?.replace) {
+      globalHistory.replaceState(historyState, "", url);
+    } else {
+      window.location.replace(url);
+    }
 
     if (v5Compat && listener) {
       listener({ action, location: history.location, delta: 0 });
