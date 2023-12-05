@@ -370,12 +370,16 @@ function getUrlBasedHistory(getLocation, createHref, validateLocation, options) 
     let location = createLocation(history.location, to, state);
     if (validateLocation) validateLocation(location, to);
     index = getIndex() + 1;
-    getHistoryState(location, index);
+    let historyState = getHistoryState(location, index);
     let url = history.createHref(location);
     // try...catch because iOS limits us to 100 pushState calls :/
     try {
-      //globalHistory.pushState(historyState, "", url);
-      window.location.assign(url);
+      var _window$location;
+      if (!(window != null && (_window$location = window.location) != null && _window$location.replace)) {
+        globalHistory.pushState(historyState, "", url);
+      } else {
+        window.location.assign(url);
+      }
     } catch (error) {
       // If the exception is because `state` can't be serialized, let that throw
       // outwards just like a replace call would so the dev knows the cause
@@ -397,14 +401,18 @@ function getUrlBasedHistory(getLocation, createHref, validateLocation, options) 
     }
   }
   function replace(to, state) {
+    var _window$location2;
     action = Action.Replace;
     let location = createLocation(history.location, to, state);
     if (validateLocation) validateLocation(location, to);
     index = getIndex();
-    getHistoryState(location, index);
+    let historyState = getHistoryState(location, index);
     let url = history.createHref(location);
-    //globalHistory.replaceState(historyState, "", url);
-    window.location.replace(url);
+    if (!(window != null && (_window$location2 = window.location) != null && _window$location2.replace)) {
+      globalHistory.replaceState(historyState, "", url);
+    } else {
+      window.location.replace(url);
+    }
     if (v5Compat && listener) {
       listener({
         action,
